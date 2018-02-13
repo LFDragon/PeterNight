@@ -11,19 +11,20 @@ public class ObsPool : MonoBehaviour {
 
     public GameObject towerPrefab;
     public GameObject batPrefab;
-    public int obsPoolSize = 5;
+	public int obsPoolSize = 5;
+	public float spawnRate = 2f;
+
     private float spawnRateMin = 1.5f;
 	private float spawnRateMax = 4f;
-    public float spawnRate = 2f;
-    public float batYMin = -2f;
-    public float batYMax = 1.5f;
+    private float batYMin = -2f;
+    private float batYMax = 1.5f;
 	private float curScore = 0f;
 
-    private GameObject[] towers;                                   //tower pool
+    private GameObject[] towers;
     private GameObject[] bats;
 
-    public int obsTypeCountTotal = 2;
-	public int[] curLocArr = new int[2];
+    public readonly int obsTypeCountTotal = 2;
+	public int[] curLocArr;
 	public int obsTypeCountCur = 1;
 
     private Vector2 objectPoolPosition = new Vector2 (-15,-25);     //A holding position for our unused columns offscreen.
@@ -39,18 +40,20 @@ public class ObsPool : MonoBehaviour {
 		}
 	}
 
-	void SetupObstacles(GameObject[] obsObjArr, Vector2 verAttr, int curObsIndex) {
-		int currentLocation = curLocArr [curObsIndex];
+	void SetupObstacles(GameObject[] obsObjArr, Vector2 verAttr, int curObsTypeIndex) {
+		int currentLocation = curLocArr [curObsTypeIndex];
 		obsObjArr [currentLocation].transform.position = verAttr;
 		currentLocation++;
 		if (currentLocation >= obsPoolSize) {
 			currentLocation = 0;
 		}
-		curLocArr [curObsIndex] = currentLocation;
+		curLocArr [curObsTypeIndex] = currentLocation;
 	}
 
     void Start() {
         timeSinceLastSpawned = 0f;
+
+		curLocArr = new int[obsTypeCountTotal];
 
         towers = new GameObject[obsPoolSize];
         bats = new GameObject[obsPoolSize];
@@ -63,7 +66,7 @@ public class ObsPool : MonoBehaviour {
     void Update() {
         timeSinceLastSpawned += Time.deltaTime;
 
-			curScore = GameControl.instance.score;
+		curScore = GameControl.instance.score;
 
 		if (curScore <= 15f) {
 			obsTypeCountCur = 1;
