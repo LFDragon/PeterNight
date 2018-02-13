@@ -4,11 +4,19 @@ using System.Collections;
 public class Bird : MonoBehaviour 
 {
 	public float upForce;					//Upward force of the "flap".
+    private float protectTime = 1f;
 	private bool isDead = false;			//Has the player collided with a wall?
     private float timeElapse = 0f;
+    private float protectTimeElapse = 0f;
+    private float invincibleTimeElapse = 0f;
+    private bool isCollided = false;
 
 	//private Animator anim;					//Reference to the Animator component.
 	private Rigidbody2D rb2d;				//Holds a reference to the Rigidbody2D component of the bird.
+    private Collider2D polycollider;
+    private Animator anim;
+    private int hp = 3;
+    private bool disableTrigger = false;
 
 	void Start()
 	{
@@ -16,10 +24,25 @@ public class Bird : MonoBehaviour
 		//anim = GetComponent<Animator> ();
 		//Get and store a reference to the Rigidbody2D attached to this GameObject.
 		rb2d = GetComponent<Rigidbody2D>();
+        polycollider = GetComponent<PolygonCollider2D>();
+        anim = GetComponent<Animator>();
+        polycollider.isTrigger = true;
 	}
 
 	void Update()
-	{
+    {
+        if (isCollided)
+        {
+            protectTimeElapse += Time.deltaTime;
+            if (protectTimeElapse >= protectTime)
+            {
+                anim.SetTrigger("idle");
+                isCollided = false;
+                protectTimeElapse = 0f;
+                if (disableTrigger)
+                    polycollider.isTrigger = false;
+            }
+        }
 		//Don't allow control if the bird has died.
 		if (isDead == false) 
 		{
@@ -77,13 +100,26 @@ public class Bird : MonoBehaviour
 
 	void OnCollisionEnter2D(Collision2D other)
 	{
-		// Zero out the bird's velocity
 		rb2d.velocity = Vector2.zero;
-		// If the bird collides with something set it to dead...
 		isDead = true;
-		//...tell the Animator about it...
-		//anim.SetTrigger ("Die");
-		//...and tell the game control about it.
+        GameControl.instance.ReduceHP(hp);
 		GameControl.instance.BirdDied ();
 	}
+
+    void OnTriggerEnter2D(Collider2D other) 
+    {
+        if (!isCollided)
+        {
+            if (hp > 1)
+            {
+                GameControl.instance.ReduceHP(hp);
+                hp--;
+                anim.SetTrigger("collide");
+                isCollided = true;
+                if (hp == 1)
+                    disableTrigger = true;
+            }
+        }
+    }
+
 }
