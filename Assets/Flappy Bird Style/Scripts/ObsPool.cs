@@ -4,93 +4,97 @@ using UnityEngine;
 
 public class ObsPool : MonoBehaviour {
 
-    public GameObject towerPrefab;                                    //The column game object.
+	public enum Obstacle {
+		Tower, 
+		Bat
+	};
+
+    public GameObject towerPrefab;
     public GameObject batPrefab;
-    public int obsPoolSize = 5;                                  //How many columns to keep on standby.
-    public float spawnRatemin = 1f;                                    //How quickly columns spawn.
-    public float spawnRatemax = 5f;
-    private float spawnRate = 2f;
-    public float batYmin = -2f;
-    public float batYmax = 1.5f;
+    public int obsPoolSize = 5;
+    private float spawnRateMin = 1.5f;
+	private float spawnRateMax = 4f;
+    public float spawnRate = 2f;
+    public float batYMin = -2f;
+    public float batYMax = 1.5f;
+	private float curScore = 0f;
 
     private GameObject[] towers;                                   //tower pool
     private GameObject[] bats;
-    private ArrayList obsList = new ArrayList();
-    private int currentTow = 0;                                  //Index of the current column in the collection.
-    private int currentBat = 0;
-    public int kindcount = 2;
+
+    public int obsTypeCountTotal = 2;
+	public int[] curLocArr = new int[2];
+	public int obsTypeCountCur = 1;
 
     private Vector2 objectPoolPosition = new Vector2 (-15,-25);     //A holding position for our unused columns offscreen.
     private float spawnXPosition = 15f;
 
     private float timeSinceLastSpawned;
 
+	private ArrayList curObsTypeArr = new ArrayList();
 
-    void Start()
-    {
+	void GenerateObstacles(GameObject obsObj, GameObject[] obsObjArr) {
+		for (int i = 0; i < obsPoolSize; i++) {
+			obsObjArr[i] = (GameObject)Instantiate(obsObj, objectPoolPosition, Quaternion.identity);
+		}
+	}
+
+	void SetupObstacles(GameObject[] obsObjArr, Vector2 verAttr, int curObsIndex) {
+		int currentLocation = curLocArr [curObsIndex];
+		obsObjArr [currentLocation].transform.position = verAttr;
+		currentLocation++;
+		if (currentLocation >= obsPoolSize) {
+			currentLocation = 0;
+		}
+		curLocArr [curObsIndex] = currentLocation;
+	}
+
+    void Start() {
         timeSinceLastSpawned = 0f;
-
-        //Initialize the columns collection.
-        //obstacles = new GameObject[obsPoolSize];
-        //Loop through the collection... 
-//        for(int i = 0; i < obsPoolSize; i++)
-//        {
-//            //...and create the individual columns.
-//            //if(i<obsPoolSize/2) obstacles[i] = (GameObject)Instantiate(towerPrefab, objectPoolPosition, Quaternion.identity);
-//            //else (GameObject)Instantiate(batPrefab, objectPoolPosition, Quaternion.identity);
-//            if(i<obsPoolSize/2) obsList.Add((GameObject)Instantiate(towerPrefab, objectPoolPosition, Quaternion.identity));
-//            else obsList.Add((GameObject)Instantiate(batPrefab, objectPoolPosition, Quaternion.identity));
-//        }
 
         towers = new GameObject[obsPoolSize];
         bats = new GameObject[obsPoolSize];
 
-        for (int i = 0; i < obsPoolSize; i++)
-        {
-            towers[i] = (GameObject)Instantiate(towerPrefab, objectPoolPosition, Quaternion.identity);
-        }
-        for (int i = 0; i < obsPoolSize; i++)
-        {
-            bats[i] = (GameObject)Instantiate(batPrefab, objectPoolPosition, Quaternion.identity);
-        }
+		GenerateObstacles(towerPrefab, towers);
+		GenerateObstacles(batPrefab, bats);
     }
 
-
     //This spawns columns as long as the game is not over.
-    void Update()
-    {
+    void Update() {
         timeSinceLastSpawned += Time.deltaTime;
 
-        if (GameControl.instance.gameOver == false && timeSinceLastSpawned >= spawnRate) 
-        {   
+			curScore = GameControl.instance.score;
+
+		if (curScore <= 15f) {
+			obsTypeCountCur = 1;
+			curObsTypeArr.Add (Obstacle.Tower);
+		} else if (curScore <= 35f) {
+			obsTypeCountCur = 1;
+			curObsTypeArr.Clear ();
+			curObsTypeArr.Add (Obstacle.Bat);
+		} else {
+			obsTypeCountCur = 2;
+			curObsTypeArr.Clear ();
+			curObsTypeArr.Add (Obstacle.Tower);
+			curObsTypeArr.Add (Obstacle.Bat);
+		}
+
+        if (GameControl.instance.gameOver == false && timeSinceLastSpawned >= spawnRate)  {
+			
             timeSinceLastSpawned = 0f;
-            spawnRate = Random.Range(spawnRatemin, spawnRatemax);
+            spawnRate = Random.Range(spawnRateMin, spawnRateMax);
 
-            int kind = Random.Range(0, kindcount);
+			int typeIndex = Random.Range(0, obsTypeCountCur);
+			int type = (int)curObsTypeArr [typeIndex];
 
-            //...then set the current column to that position.
-            //((GameObject)obsList[currentObs]).transform.position = new Vector2(spawnXPosition, 0f);
-            if (kind == 0)
-            {
-                towers[currentTow].transform.position = new Vector2(spawnXPosition, 0f);
-                currentTow++;
-                if (currentTow >= obsPoolSize)
-                    currentTow = 0;
-            }
-            else if (kind == 1)
-            {
-                bats[currentBat].transform.position = new Vector2(spawnXPosition, Random.Range(batYmin,batYmax));
-                currentBat++;
-                if (currentBat >= obsPoolSize)
-                    currentBat = 0;
-            }
-
-            //Increase the value of currentColumn. If the new size is too big, set it back to zero
-
-//            if (currentObs >= obsPoolSize) 
-//            {
-//                currentObs = 0;
-//            }
+			switch (type) {
+			case (int)Obstacle.Tower:
+				SetupObstacles (towers, new Vector2 (spawnXPosition, 0f), (int)Obstacle.Tower);
+				break;
+			case (int)Obstacle.Bat: 
+				SetupObstacles (bats, new Vector2 (spawnXPosition, Random.Range (batYMin, batYMax)), (int)Obstacle.Bat);
+				break;
+			}
         }
     }
 }
