@@ -16,6 +16,11 @@ public class GameControl : MonoBehaviour
 	public float scrollSpeed = -1.5f;
     public float scoreRate = 1f;
 
+    public bool updateStars = false;
+    private Transform lastStars;
+    private float updateStarsRate = 2f;
+    private float timeSinceCollision = 0f;
+
 	void Awake()
 	{
 		//If we don't currently have a game control...
@@ -36,6 +41,19 @@ public class GameControl : MonoBehaviour
 			//...reload the current scene.
 			SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
 		}
+        if (updateStars)
+        {
+            timeSinceCollision += Time.deltaTime;
+            if (timeSinceCollision >= updateStarsRate)
+            {
+                timeSinceCollision = 0f;
+                updateStars = false;
+                foreach (Transform child in lastStars)
+                {
+                    child.gameObject.SetActive(true);
+                }
+            }
+        }
 	}
 
     public void BirdScored(int s)
@@ -78,5 +96,10 @@ public class GameControl : MonoBehaviour
             default:
                 break;    
         }
+    }
+    public void RenewStars(Transform parent)
+    {
+        updateStars = true;
+        lastStars = parent;
     }
 }

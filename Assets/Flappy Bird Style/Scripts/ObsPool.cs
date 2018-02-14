@@ -6,11 +6,13 @@ public class ObsPool : MonoBehaviour {
 
 	public enum Obstacle {
 		Tower, 
-		Bat
+		Bat,
+        Star
 	};
 
     public GameObject towerPrefab;
     public GameObject batPrefab;
+    public GameObject starPrefab;
 	public int obsPoolSize = 5;
 	public float spawnRate = 2f;
 
@@ -19,11 +21,14 @@ public class ObsPool : MonoBehaviour {
     private float batYMin = -2f;
     private float batYMax = 1.5f;
 	private float curScore = 0f;
+    private float starYmin = -2f;
+    private float starYmax = 1.5f;
 
     private GameObject[] towers;
     private GameObject[] bats;
+    private GameObject[] stars;
 
-    public readonly int obsTypeCountTotal = 2;
+    public readonly int obsTypeCountTotal = 3;
 	public int[] curLocArr;
 	public int obsTypeCountCur = 1;
 
@@ -57,9 +62,11 @@ public class ObsPool : MonoBehaviour {
 
         towers = new GameObject[obsPoolSize];
         bats = new GameObject[obsPoolSize];
+        stars = new GameObject[obsPoolSize];
 
 		GenerateObstacles(towerPrefab, towers);
 		GenerateObstacles(batPrefab, bats);
+        GenerateObstacles(starPrefab, stars);
     }
 
     //This spawns columns as long as the game is not over.
@@ -70,7 +77,7 @@ public class ObsPool : MonoBehaviour {
 
 		if (curScore <= 15f) {
 			obsTypeCountCur = 1;
-			curObsTypeArr.Add (Obstacle.Tower);
+            curObsTypeArr.Add (Obstacle.Star);
 		} else if (curScore <= 35f) {
 			obsTypeCountCur = 1;
 			curObsTypeArr.Clear ();
@@ -97,6 +104,9 @@ public class ObsPool : MonoBehaviour {
 			case (int)Obstacle.Bat: 
 				SetupObstacles (bats, new Vector2 (spawnXPosition, Random.Range (batYMin, batYMax)), (int)Obstacle.Bat);
 				break;
+                case (int)Obstacle.Star:
+                    SetupObstacles(stars, new Vector2(spawnXPosition, Random.Range(starYmin, starYmax)), (int)Obstacle.Star);
+                    break;
 			}
         }
     }

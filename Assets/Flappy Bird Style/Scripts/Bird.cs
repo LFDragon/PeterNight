@@ -109,7 +109,7 @@ public class Bird : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other) 
     {
-        if (!isCollided && other.tag != "boundary")
+        if (!isCollided && other.tag != "boundary" && other.tag != "star")
         {
             if (hp > 1)
             {
@@ -129,6 +129,15 @@ public class Bird : MonoBehaviour
             isDead = true;
             GameControl.instance.ReduceHP(4);
             GameControl.instance.BirdDied ();
+        }
+        else if (other.gameObject.CompareTag("star"))
+        {
+            other.gameObject.SetActive(false);
+            GameControl.instance.BirdScored(10);
+            if (GameControl.instance.updateStars == false)
+            {
+                GameControl.instance.RenewStars(other.gameObject.transform.parent);
+            }
         }
     }
 
