@@ -7,7 +7,8 @@ public class ObsPool : MonoBehaviour {
 	public enum Obstacle {
 		Tower, 
 		Bat,
-        TowerWithBrick
+        TowerWithBrick,
+		BatWithWave
 	};
 
 	public enum Collective {
@@ -18,10 +19,12 @@ public class ObsPool : MonoBehaviour {
     public GameObject batPrefab;
     public GameObject starPrefab;
 	public GameObject towerWithBrickPrefab;
+	public GameObject batWithWavePrefab;
 
 	private GameObject[] towers;
 	private GameObject[] bats;
 	private GameObject[] towerWithBricks;
+	private GameObject[] batWithWaves;
 	private GameObject[] stars;
 
 	private Vector2 objectPoolPosition = new Vector2 (-15,-25);     //A holding position for our unused columns offscreen.
@@ -30,7 +33,7 @@ public class ObsPool : MonoBehaviour {
 	//Main attributes.
 	public int obsPoolSize = 5;
 	public float spawnRate = 2f;
-	public readonly int obsTypeCountTotal = 3;
+	public readonly int obsTypeCountTotal = 4;
 	public readonly int colTypeCountTotal = 1;
 
 	//Costum attributes.
@@ -87,11 +90,13 @@ public class ObsPool : MonoBehaviour {
 		bats = new GameObject[obsPoolSize];
 		towerWithBricks = new GameObject[obsPoolSize];
 		stars = new GameObject[obsPoolSize];
+		batWithWaves = new GameObject[obsPoolSize];
 
 		GenerateObstacles (towerPrefab, towers);
 		GenerateObstacles (batPrefab, bats);
 		GenerateObstacles (towerWithBrickPrefab, towerWithBricks);
         GenerateObstacles (starPrefab, stars);
+		GenerateObstacles (batWithWavePrefab, batWithWaves);
     }
 
     //This spawns columns as long as the game is not over.
@@ -102,7 +107,7 @@ public class ObsPool : MonoBehaviour {
 
 		if (curScore <= 15f) {
 			obsTypeCountCur = 1;
-			curObsTypeArr.Add (Obstacle.Tower);
+			curObsTypeArr.Add (Obstacle.BatWithWave);
 		} else if (curScore <= 30f) {
 			obsTypeCountCur = 1;
 			curObsTypeArr.Clear ();
@@ -141,6 +146,9 @@ public class ObsPool : MonoBehaviour {
 				break;
 			case (int)Obstacle.TowerWithBrick:
 				SetupObstacles (towerWithBricks, new Vector2(spawnXPosition, 0f), (int)Obstacle.TowerWithBrick);
+				break;
+			case (int)Obstacle.BatWithWave:
+				SetupObstacles (batWithWaves, new Vector2(spawnXPosition, Random.Range (batYMin, batYMax)), (int)Obstacle.BatWithWave);
 				break;
 			case (int)Collective.Star:
                 SetupCollectives (stars, new Vector2(spawnXPosition, Random.Range(starYMin, starYMax)), (int)Collective.Star);
