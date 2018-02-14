@@ -54,6 +54,7 @@ public class BrickControl : MonoBehaviour {
             {
                 anim.SetTrigger("Still");
                 shouldTrigger = true;
+                curIndex = 0;
                 for (int i = 0; i < 3; i++) 
                 {
                     brick[i].GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Kinematic;

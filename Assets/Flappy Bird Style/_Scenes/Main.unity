@@ -1317,9 +1317,12 @@ MonoBehaviour:
     type: 2}
   batPrefab: {fileID: 1683820902637708, guid: a802d13482c0b404ca8ea84050277c50, type: 2}
   starPrefab: {fileID: 1116222201182602, guid: 435ee006cc44b459f9b563667c042141, type: 2}
+  towerWithBrickPrefab: {fileID: 1619086328762802, guid: e92c1ece052364cfabb647cf0f28b0ba,
+    type: 2}
   obsPoolSize: 5
   spawnRate: 2
-  curLocArr: 0000000000000000
+  curObsLocArr: 
+  curColLocArr: 
   obsTypeCountCur: 1
 --- !u!114 &1244831760
 MonoBehaviour:
