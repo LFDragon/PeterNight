@@ -7,36 +7,47 @@ public class ObsPool : MonoBehaviour {
 	public enum Obstacle {
 		Tower, 
 		Bat,
-        Star
+        TowerWithBrick
 	};
+
+	public enum Collective {
+		Star = 800
+	}
 
     public GameObject towerPrefab;
     public GameObject batPrefab;
     public GameObject starPrefab;
+	public GameObject towerWithBrickPrefab;
+
+	private GameObject[] towers;
+	private GameObject[] bats;
+	private GameObject[] towerWithBricks;
+	private GameObject[] stars;
+
+	private Vector2 objectPoolPosition = new Vector2 (-15,-25);     //A holding position for our unused columns offscreen.
+	private float spawnXPosition = 15f;
+
+	//Main attributes.
 	public int obsPoolSize = 5;
 	public float spawnRate = 2f;
+	public readonly int obsTypeCountTotal = 3;
+	public readonly int colTypeCountTotal = 1;
 
+	//Costum attributes.
     private float spawnRateMin = 1.5f;
 	private float spawnRateMax = 4f;
     private float batYMin = -2f;
     private float batYMax = 1.5f;
+	private float starYMin = -2f;
+	private float starYMax = 1.5f;
+
+	//DO NOT CHANGE. DEFAULT ATTRIBUTES.
 	private float curScore = 0f;
-    private float starYmin = -2f;
-    private float starYmax = 1.5f;
-
-    private GameObject[] towers;
-    private GameObject[] bats;
-    private GameObject[] stars;
-
-    public readonly int obsTypeCountTotal = 3;
-	public int[] curLocArr;
+	public int[] curObsLocArr;
+	public int[] curColLocArr;
+	//public int[] typeToPoolSize
 	public int obsTypeCountCur = 1;
-
-    private Vector2 objectPoolPosition = new Vector2 (-15,-25);     //A holding position for our unused columns offscreen.
-    private float spawnXPosition = 15f;
-
     private float timeSinceLastSpawned;
-
 	private ArrayList curObsTypeArr = new ArrayList();
 
 	void GenerateObstacles(GameObject obsObj, GameObject[] obsObjArr) {
@@ -46,27 +57,41 @@ public class ObsPool : MonoBehaviour {
 	}
 
 	void SetupObstacles(GameObject[] obsObjArr, Vector2 verAttr, int curObsTypeIndex) {
-		int currentLocation = curLocArr [curObsTypeIndex];
+		int currentLocation = curObsLocArr [curObsTypeIndex];
 		obsObjArr [currentLocation].transform.position = verAttr;
 		currentLocation++;
 		if (currentLocation >= obsPoolSize) {
 			currentLocation = 0;
 		}
-		curLocArr [curObsTypeIndex] = currentLocation;
+		curObsLocArr [curObsTypeIndex] = currentLocation;
+	}
+
+	void SetupCollectives(GameObject[] colObjArr, Vector2 verAttr, int curColTypeIndex) {
+		curColTypeIndex -= 800;
+		int currentLocation = curColLocArr [curColTypeIndex];
+		colObjArr [currentLocation].transform.position = verAttr;
+		currentLocation++;
+		if (currentLocation >= obsPoolSize) {
+			currentLocation = 0;
+		}
+		curColLocArr [curColTypeIndex] = currentLocation;
 	}
 
     void Start() {
         timeSinceLastSpawned = 0f;
 
-		curLocArr = new int[obsTypeCountTotal];
+		curObsLocArr = new int[obsTypeCountTotal];
+		curColLocArr = new int[colTypeCountTotal];
 
-        towers = new GameObject[obsPoolSize];
-        bats = new GameObject[obsPoolSize];
-        stars = new GameObject[obsPoolSize];
+		towers = new GameObject[obsPoolSize];
+		bats = new GameObject[obsPoolSize];
+		towerWithBricks = new GameObject[obsPoolSize];
+		stars = new GameObject[obsPoolSize];
 
-		GenerateObstacles(towerPrefab, towers);
-		GenerateObstacles(batPrefab, bats);
-        GenerateObstacles(starPrefab, stars);
+		GenerateObstacles (towerPrefab, towers);
+		GenerateObstacles (batPrefab, bats);
+		GenerateObstacles (towerWithBrickPrefab, towerWithBricks);
+        GenerateObstacles (starPrefab, stars);
     }
 
     //This spawns columns as long as the game is not over.
@@ -77,16 +102,26 @@ public class ObsPool : MonoBehaviour {
 
 		if (curScore <= 15f) {
 			obsTypeCountCur = 1;
-            curObsTypeArr.Add (Obstacle.Star);
-		} else if (curScore <= 35f) {
+			curObsTypeArr.Add (Obstacle.Tower);
+		} else if (curScore <= 30f) {
 			obsTypeCountCur = 1;
 			curObsTypeArr.Clear ();
 			curObsTypeArr.Add (Obstacle.Bat);
+		} else if (curScore <= 45f) {
+			obsTypeCountCur = 1;
+			curObsTypeArr.Clear ();
+			curObsTypeArr.Add (Obstacle.TowerWithBrick);
+		} else if (curScore <= 60f) {
+			obsTypeCountCur = 1;
+			curObsTypeArr.Clear ();
+			curObsTypeArr.Add (Collective.Star);
 		} else {
-			obsTypeCountCur = 2;
+			obsTypeCountCur = 4;
 			curObsTypeArr.Clear ();
 			curObsTypeArr.Add (Obstacle.Tower);
 			curObsTypeArr.Add (Obstacle.Bat);
+			curObsTypeArr.Add (Obstacle.TowerWithBrick);
+			curObsTypeArr.Add (Collective.Star);
 		}
 
         if (GameControl.instance.gameOver == false && timeSinceLastSpawned >= spawnRate)  {
@@ -104,9 +139,12 @@ public class ObsPool : MonoBehaviour {
 			case (int)Obstacle.Bat: 
 				SetupObstacles (bats, new Vector2 (spawnXPosition, Random.Range (batYMin, batYMax)), (int)Obstacle.Bat);
 				break;
-                case (int)Obstacle.Star:
-                    SetupObstacles(stars, new Vector2(spawnXPosition, Random.Range(starYmin, starYmax)), (int)Obstacle.Star);
-                    break;
+			case (int)Obstacle.TowerWithBrick:
+				SetupObstacles (towerWithBricks, new Vector2(spawnXPosition, 0f), (int)Obstacle.TowerWithBrick);
+				break;
+			case (int)Collective.Star:
+                SetupCollectives (stars, new Vector2(spawnXPosition, Random.Range(starYMin, starYMax)), (int)Collective.Star);
+                break;
 			}
         }
     }
