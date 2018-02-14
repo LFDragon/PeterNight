@@ -4,7 +4,7 @@ using System.Collections;
 public class Bird : MonoBehaviour 
 {
 	public float upForce;					//Upward force of the "flap".
-    private float protectTime = 1f;
+    private float protectTime = 2f;
 	private bool isDead = false;			//Has the player collided with a wall?
     private float timeElapse = 0f;
     private float protectTimeElapse = 0f;
@@ -101,6 +101,7 @@ public class Bird : MonoBehaviour
 	void OnCollisionEnter2D(Collision2D other)
 	{
 		rb2d.velocity = Vector2.zero;
+        rb2d.gravityScale = 1f;
 		isDead = true;
         GameControl.instance.ReduceHP(hp);
 		GameControl.instance.BirdDied ();
@@ -108,7 +109,7 @@ public class Bird : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other) 
     {
-        if (!isCollided)
+        if (!isCollided && other.tag != "boundary")
         {
             if (hp > 1)
             {
@@ -119,6 +120,15 @@ public class Bird : MonoBehaviour
                 if (hp == 1)
                     disableTrigger = true;
             }
+        }
+        else if(other.tag == "boundary")
+        {
+            polycollider.isTrigger = false;
+            rb2d.velocity = Vector2.zero;
+            rb2d.gravityScale = 1f;
+            isDead = true;
+            GameControl.instance.ReduceHP(4);
+            GameControl.instance.BirdDied ();
         }
     }
 

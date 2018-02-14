@@ -70,6 +70,11 @@ public class GameControl : MonoBehaviour
             case 3:
                 hpComponent.transform.Find("heart3").gameObject.SetActive(false);
                 break;
+            case 4:
+                hpComponent.transform.Find("heart3").gameObject.SetActive(false);
+                hpComponent.transform.Find("heart2").gameObject.SetActive(false);
+                hpComponent.transform.Find("heart1").gameObject.SetActive(false);
+                break;
             default:
                 break;    
         }
