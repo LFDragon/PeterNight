@@ -1316,6 +1316,7 @@ MonoBehaviour:
   towerPrefab: {fileID: 1323334010728048, guid: 6d0c37e3bb4524307b6189d19d41aa1b,
     type: 2}
   batPrefab: {fileID: 1683820902637708, guid: a802d13482c0b404ca8ea84050277c50, type: 2}
+  starPrefab: {fileID: 1116222201182602, guid: 435ee006cc44b459f9b563667c042141, type: 2}
   obsPoolSize: 5
   spawnRate: 2
   curLocArr: 0000000000000000
@@ -1338,6 +1339,7 @@ MonoBehaviour:
   gameOver: 0
   scrollSpeed: -5
   scoreRate: 1
+  updateStars: 0
 --- !u!4 &1244831761
 Transform:
   m_ObjectHideFlags: 0
