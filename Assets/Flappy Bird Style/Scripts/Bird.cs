@@ -16,7 +16,6 @@ public class Bird : MonoBehaviour
     private Collider2D polycollider;
     private Animator anim;
     private int hp = 3;
-    private bool disableTrigger = false;
 
 	void Start()
 	{
