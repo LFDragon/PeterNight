@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Scenery
   - boundary
+  - star
+  - obstacles
   layers:
   - Default
   - TransparentFX

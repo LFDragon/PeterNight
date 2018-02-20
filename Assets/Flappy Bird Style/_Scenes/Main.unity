@@ -1319,6 +1319,8 @@ MonoBehaviour:
   starPrefab: {fileID: 1116222201182602, guid: 435ee006cc44b459f9b563667c042141, type: 2}
   towerWithBrickPrefab: {fileID: 1619086328762802, guid: e92c1ece052364cfabb647cf0f28b0ba,
     type: 2}
+  batWithWavePrefab: {fileID: 1951456238056936, guid: accc656ee98b040229c4f85c5c49876a,
+    type: 2}
   obsPoolSize: 5
   spawnRate: 2
   curObsLocArr: 

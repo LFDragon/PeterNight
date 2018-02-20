@@ -25,7 +25,7 @@ GameObject:
   - component: {fileID: 114038282664185170}
   m_Layer: 0
   m_Name: Soundwave2
-  m_TagString: Untagged
+  m_TagString: obstacles
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -44,7 +44,7 @@ GameObject:
   - component: {fileID: 114673297016333500}
   m_Layer: 0
   m_Name: Soundwave1
-  m_TagString: Untagged
+  m_TagString: obstacles
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -78,7 +78,7 @@ GameObject:
   - component: {fileID: 50854965894936094}
   - component: {fileID: 114085218925118474}
   m_Layer: 0
-  m_Name: BatWithWave 1
+  m_Name: BatWithWave
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -223,7 +223,7 @@ BoxCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: -0.07, y: 0.42}
@@ -248,7 +248,7 @@ BoxCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: -0.07, y: 0.42}

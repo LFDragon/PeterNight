@@ -39,8 +39,6 @@ public class Bird : MonoBehaviour
                 anim.SetTrigger("idle");
                 isCollided = false;
                 protectTimeElapse = 0f;
-                if (disableTrigger)
-                    polycollider.isTrigger = false;
             }
         }
 		//Don't allow control if the bird has died.
@@ -98,15 +96,6 @@ public class Bird : MonoBehaviour
 		}
 	}
 
-	void OnCollisionEnter2D(Collision2D other)
-	{
-		rb2d.velocity = Vector2.zero;
-        rb2d.gravityScale = 1f;
-		isDead = true;
-        GameControl.instance.ReduceHP(hp);
-		GameControl.instance.BirdDied ();
-	}
-
     void OnTriggerEnter2D(Collider2D other) 
     {
         if (!isCollided && other.tag != "boundary" && other.tag != "star")
@@ -117,28 +106,35 @@ public class Bird : MonoBehaviour
                 hp--;
                 anim.SetTrigger("collide");
                 isCollided = true;
-                if (hp == 1)
-                    disableTrigger = true;
+            }
+            else if (hp == 1)
+            {
+                BirdDie();
             }
         }
         else if(other.tag == "boundary")
         {
-            polycollider.isTrigger = false;
-            rb2d.velocity = Vector2.zero;
-            rb2d.gravityScale = 1f;
-            isDead = true;
-            GameControl.instance.ReduceHP(4);
-            GameControl.instance.BirdDied ();
+            BirdDie();
         }
         else if (other.gameObject.CompareTag("star"))
         {
             other.gameObject.SetActive(false);
-            GameControl.instance.BirdScored(10);
+            GameControl.instance.BirdScored(5);
             if (GameControl.instance.updateStars == false)
             {
                 GameControl.instance.RenewStars(other.gameObject.transform.parent);
             }
         }
+    }
+
+    void BirdDie()
+    {
+        polycollider.isTrigger = false;
+        rb2d.velocity = Vector2.zero;
+        rb2d.gravityScale = 1f;
+        isDead = true;
+        GameControl.instance.ReduceHP(4);
+        GameControl.instance.BirdDied ();
     }
 
 }
