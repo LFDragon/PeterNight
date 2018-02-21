@@ -95,7 +95,8 @@ public class Bird : MonoBehaviour
 	}
 
     void OnTriggerEnter2D(Collider2D other) {
-		if (!isCollided && other.tag != "boundary" && other.tag != "star" && other.tag != "Heal") {
+		if (!isCollided && other.tag != "boundary" && other.tag != "star" && other.tag != "Heal" 
+            && other.tag != "magnet" && other.tag != "coin") {
 			if (GameControl.instance.ReduceHP (1)) {
 				hp = 0;
 				BirdDie ();
@@ -121,7 +122,17 @@ public class Bird : MonoBehaviour
 				GameControl.instance.IncreaseHP (1);
 				hp = GameControl.instance.getHP();
 			}
-		}
+		} else if (other.gameObject.CompareTag("magnet"))
+        {
+            other.gameObject.SetActive(false);
+            GameControl.instance.hasMagnet = true;
+        } else if (other.gameObject.CompareTag("coin"))
+        {
+            GameControl.instance.BirdScored(5);
+//            Destroy(other.gameObject);
+            other.gameObject.SetActive(false);
+        }
+
     }
 
     void BirdDie() {

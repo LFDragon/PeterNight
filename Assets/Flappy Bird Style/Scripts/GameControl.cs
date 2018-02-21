@@ -24,6 +24,8 @@ public class GameControl : MonoBehaviour
 	public int hp = 3;
 	public GameObject[] hpHeartObjArr;
 
+    public bool hasMagnet = false;
+
 	void Awake() {
 		//If we don't currently have a game control...
 		if (instance == null) {
