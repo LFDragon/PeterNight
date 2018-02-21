@@ -136,7 +136,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e16cac95fe2f40419760849b71ad8b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shootInterval: 0.8
+  wave: {fileID: 1475453063570024, guid: bf9dc2acdd12d462489ded0a3eabe0fe, type: 2}
+  shootInterval: 1
 --- !u!212 &212448820394088594
 SpriteRenderer:
   m_ObjectHideFlags: 1
