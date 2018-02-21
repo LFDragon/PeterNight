@@ -20,26 +20,30 @@ public class FireworkControl : MonoBehaviour {
     }
 
     void Update() {
-        if (!fired)
+         
+        if (GameControl.instance.gameOver)
         {
-            if (transform.position.x <= fireposition && transform.position.x > LEFT_X)
-            {
-                Instantiate(Firework, new Vector2(transform.position.x, -2), Quaternion.identity);
-                fired = true;
-            }
+            rb2d.velocity = Vector2.zero;
         }
         else
         {
-            timeElapsed += Time.deltaTime;
-            if (timeElapsed >= firerate)
+            if (!fired)
             {
-                fired = false;
-                timeElapsed = 0f;
+                if (transform.position.x <= fireposition && transform.position.x > LEFT_X)
+                {
+                    Instantiate(Firework, new Vector2(transform.position.x, -2), Quaternion.identity);
+                    fired = true;
+                }
             }
-        }
-        
-        if (GameControl.instance.gameOver) {
-            rb2d.velocity = Vector2.zero;
+            else
+            {
+                timeElapsed += Time.deltaTime;
+                if (timeElapsed >= firerate)
+                {
+                    fired = false;
+                    timeElapsed = 0f;
+                }
+            }
         }
     }
 

@@ -25,24 +25,31 @@ public class FireworkGenerator : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (!fired)
+        if (GameControl.instance.gameOver)
         {
-            timeElapsed += Time.deltaTime;
-            if (timeElapsed >= fireCountDown)
-            {
-                fired = true;
-            }
+            rb2d.velocity = Vector2.zero;
         }
         else
         {
-            if (transform.position.y < randomY)
+            if (!fired)
             {
-                rb2d.velocity = new Vector2(GameControl.instance.scrollSpeed, firespeed);
+                timeElapsed += Time.deltaTime;
+                if (timeElapsed >= fireCountDown)
+                {
+                    fired = true;
+                }
             }
             else
             {
-                Instantiate(exploded, new Vector2(transform.position.x,transform.position.y), Quaternion.identity);
-                DestroyGameObject();
+                if (transform.position.y < randomY)
+                {
+                    rb2d.velocity = new Vector2(GameControl.instance.scrollSpeed, firespeed);
+                }
+                else
+                {
+                    Instantiate(exploded, new Vector2(transform.position.x,transform.position.y), Quaternion.identity);
+                    DestroyGameObject();
+                }
             }
         }
 
