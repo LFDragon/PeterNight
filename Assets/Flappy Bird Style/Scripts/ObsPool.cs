@@ -17,6 +17,7 @@ public class ObsPool : MonoBehaviour {
 	 * 
 	 * [--Fairy--]
 	 * Heal				900
+     * Invincible       901
 	 */
 
 	public enum Obstacle {
@@ -32,16 +33,18 @@ public class ObsPool : MonoBehaviour {
 	}
 
 	public enum Fairy {
-		Heal = 900
+		Heal = 900,
+        Invincible
 	}
 
     public GameObject towerPrefab;
     public GameObject batPrefab;
     public GameObject starPrefab;
 	public GameObject towerWithBrickPrefab;
-	public GameObject batWithWavePrefab;
-	public GameObject fairyWithHealPrefab;
     public GameObject towerWithFireworkPrefab;
+    public GameObject batWithWavePrefab;
+	public GameObject fairyWithHealPrefab;
+    public GameObject fairyWithInvinciblePrefab;
 
 	public int type;
 
@@ -52,6 +55,7 @@ public class ObsPool : MonoBehaviour {
     private GameObject[] towerWithFireworks;
 	private GameObject[] stars;
 	private GameObject fairyWithHeal;
+    private GameObject fairyWithInvincible;
 
 	private Vector2 objectPoolPosition = new Vector2 (-15,-25);     //A holding position for our unused columns offscreen.
 	private float spawnXPosition = 15f;
@@ -61,7 +65,7 @@ public class ObsPool : MonoBehaviour {
 	public float spawnRate = 2f;
     public readonly int obsTypeCountTotal = 5;
 	public readonly int colTypeCountTotal = 1;
-	public readonly int fairyTypeCountTotal = 1;
+	public readonly int fairyTypeCountTotal = 2;
 
 	//Costum attributes.
     private float spawnRateMin = 1.5f;
@@ -82,6 +86,7 @@ public class ObsPool : MonoBehaviour {
 	public int obsTypeCountCur = 1;
     public float timeSinceLastSpawned;
 	public float timeSinceLastHeal;
+    public float timeSinceLastInvincible;
 
 	public ArrayList curObsTypeList = new ArrayList();
 	public bool needToHeal = false;
@@ -122,6 +127,7 @@ public class ObsPool : MonoBehaviour {
     void Start() {
         timeSinceLastSpawned = 0f;
 		timeSinceLastHeal = 0f;
+        timeSinceLastInvincible = 0f;
 
 		curObsLocArr = new int[obsTypeCountTotal];
 		curColLocArr = new int[colTypeCountTotal];
@@ -142,6 +148,7 @@ public class ObsPool : MonoBehaviour {
         GenerateObstacles (towerWithFireworkPrefab, towerWithFireworks);
 
 		fairyWithHeal = (GameObject)Instantiate(fairyWithHealPrefab, objectPoolPosition, Quaternion.identity);
+        fairyWithInvincible = (GameObject)Instantiate(fairyWithInvinciblePrefab, objectPoolPosition, Quaternion.identity);
     }
 
     //This spawns columns as long as the game is not over.
@@ -150,34 +157,39 @@ public class ObsPool : MonoBehaviour {
 			timeSinceLastHeal += Time.deltaTime;
 		}
 
+        timeSinceLastInvincible += Time.deltaTime;
         timeSinceLastSpawned += Time.deltaTime;
 
 		curScore = GameControl.instance.score;
 
 		if (curScore == 0f) {
-			obsTypeCountCur = 2;
+			obsTypeCountCur = 3;
 			curObsTypeList.Add (Obstacle.Bat);
 			curObsTypeList.Add (Obstacle.Tower);
+            curObsTypeList.Add (Fairy.Invincible);
 		} else if (curScore == 15f) {
 			curObsTypeList.Clear ();
-			obsTypeCountCur = 1;
-			curObsTypeList.Add (Obstacle.BatWithWave);
-		} else if (curScore == 30f) {
-			curObsTypeList.Clear ();
 			obsTypeCountCur = 2;
+			curObsTypeList.Add (Obstacle.BatWithWave);
+            curObsTypeList.Add (Fairy.Invincible);
+        } else if (curScore == 30f) {
+			curObsTypeList.Clear ();
+			obsTypeCountCur = 3;
 			curObsTypeList.Add (Obstacle.Bat);
 			curObsTypeList.Add (Obstacle.Tower);
-		} else if (curScore == 45f) {
+            curObsTypeList.Add (Fairy.Invincible);
+        } else if (curScore == 45f) {
 			curObsTypeList.Clear ();
-			obsTypeCountCur = 5;
+			obsTypeCountCur = 6;
 			curObsTypeList.Add (Obstacle.Tower);
 			curObsTypeList.Add (Obstacle.Bat);
 			curObsTypeList.Add (Collective.Star);
 			curObsTypeList.Add (Fairy.Heal);
             curObsTypeList.Add (Obstacle.TowerWithFirework);
-		} else if (curScore == 80f) {
+            curObsTypeList.Add (Fairy.Invincible);
+        } else if (curScore == 80f) {
 			curObsTypeList.Clear ();
-			obsTypeCountCur = 7;
+			obsTypeCountCur = 8;
 			curObsTypeList.Add (Obstacle.Tower);
 			curObsTypeList.Add (Obstacle.Bat);
 			curObsTypeList.Add (Obstacle.TowerWithBrick);
@@ -185,7 +197,8 @@ public class ObsPool : MonoBehaviour {
 			curObsTypeList.Add (Collective.Star);
 			curObsTypeList.Add (Fairy.Heal);
             curObsTypeList.Add (Obstacle.TowerWithFirework);
-		}
+            curObsTypeList.Add (Fairy.Invincible);
+        }
 
 		// When detect hp lost, add FairyWithHeal into the pool.
 		if (GameControl.instance.getHP () < 3 && !needToHeal) {
@@ -234,7 +247,20 @@ public class ObsPool : MonoBehaviour {
 					timeSinceLastSpawned = spawnRate; 
 				}
 				break;
-			}
+            case (int)Fairy.Invincible:
+                if (timeSinceLastInvincible >= 60f)
+                {
+                    fairyWithInvincible.transform.position = new Vector2(spawnXPosition, 0f);
+                    timeSinceLastInvincible = 0f;
+                }
+                else
+                {
+                    // When the FairyWithHeal doesn't need to show up, and index was randomed to be here, then, skip this heal and random again immediately.
+                    timeSinceLastSpawned = spawnRate;
+                }
+                break;
+            }
+        
         }
     }
 }
