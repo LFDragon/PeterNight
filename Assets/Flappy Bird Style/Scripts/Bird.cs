@@ -115,9 +115,12 @@ public class Bird : MonoBehaviour
                 GameControl.instance.RenewStars(other.gameObject.transform.parent);
             }
 		} else if (other.gameObject.CompareTag("Heal")) {
-			other.gameObject.transform.GetChild(0).gameObject.SetActive(false);
-			GameControl.instance.IncreaseHP (1);
-			hp = GameControl.instance.getHP();
+			GameObject heal = other.gameObject.transform.GetChild (0).gameObject;
+			if (heal.activeSelf) {
+				heal.SetActive(false);
+				GameControl.instance.IncreaseHP (1);
+				hp = GameControl.instance.getHP();
+			}
 		}
     }
 
