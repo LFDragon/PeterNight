@@ -255,7 +255,6 @@ public class ObsPool : MonoBehaviour {
                 }
                 else
                 {
-                    // When the FairyWithHeal doesn't need to show up, and index was randomed to be here, then, skip this heal and random again immediately.
                     timeSinceLastSpawned = spawnRate;
                 }
                 break;
