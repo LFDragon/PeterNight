@@ -5,19 +5,17 @@ public class Bird : MonoBehaviour
 {
 	public float upForce;					//Upward force of the "flap".
     private float protectTime = 2f;
-    public float invincibleTime = 10f;
-    private bool isDead = false;			//Has the player collided with a wall?
+	private bool isDead = false;			//Has the player collided with a wall?
     private float timeElapse = 0f;
     private float protectTimeElapse = 0f;
     private float invincibleTimeElapse = 0f;
     private bool isCollided = false;
-    private bool isInvincible = false;
 
 	//private Animator anim;					//Reference to the Animator component.
 	private Rigidbody2D rb2d;				//Holds a reference to the Rigidbody2D component of the bird.
     private Collider2D polycollider;
     private Animator anim;
-    private float moveSpeed = 0.1f;
+    private int hp = 3;
 
 	void Start(){
 		//Get reference to the Animator component attached to this GameObject.
@@ -41,26 +39,49 @@ public class Bird : MonoBehaviour
                 protectTimeElapse = 0f;
             }
         }
-        if (isInvincible)
-        {
-            invincibleTimeElapse += Time.deltaTime;
-            if (invincibleTimeElapse >= invincibleTime)
-            {
-                anim.SetTrigger("idle");
-                isInvincible = false;
-                invincibleTimeElapse = 0f;
-            }
-        }
-        //Don't allow control if the bird has died.
-        if (isDead == false) 
+		//Don't allow control if the bird has died.
+		if (isDead == false) 
 		{
+			//Look for input to trigger a "flap".
+//			if (Input.GetMouseButtonDown(0)) 
+//			{
+//				//...tell the animator about it and then...
+//				anim.SetTrigger("Flap");
+//				//...zero out the birds current y velocity before...
+//				rb2d.velocity = Vector2.zero;
+//				//	new Vector2(rb2d.velocity.x, 0);
+//				//..giving the bird some upward force.
+//				rb2d.AddForce(new Vector2(0, upForce));
+//			}
             if (Input.GetKeyUp(KeyCode.UpArrow)) 
             {
-                rb2d.AddForce(new Vector2(0, upForce));
+//                if (rb2d.velocity.y < 0)
+//                {
+//                    rb2d.velocity = Vector2.zero;
+//                }
+//                else
+//                {
+                    //...tell the animator about it and then...
+                    //anim.SetTrigger("Flap");
+                    //  new Vector2(rb2d.velocity.x, 0);
+                    //..giving the bird some upward force.
+                    rb2d.AddForce(new Vector2(0, upForce));
+//                }
             }
             else if (Input.GetKeyUp(KeyCode.DownArrow))
             {
-                rb2d.AddForce(new Vector2(0, -upForce));
+//                if (rb2d.velocity.y > 0)
+//                {
+//                    rb2d.velocity = Vector2.zero;
+//                }
+//                else
+//                {
+                    //...tell the animator about it and then...
+                    //anim.SetTrigger("Flap");
+                    //  new Vector2(rb2d.velocity.x, 0);
+                    //..giving the bird some upward force.
+                    rb2d.AddForce(new Vector2(0, -upForce));
+//                }
             }
 
 
@@ -74,15 +95,19 @@ public class Bird : MonoBehaviour
 	}
 
     void OnTriggerEnter2D(Collider2D other) {
-		if (!isCollided && !isInvincible && other.tag != "boundary" && other.tag != "star" && other.tag != "Heal" && other.tag != "Invincible") {
+		if (!isCollided && other.tag != "boundary" && other.tag != "star" && other.tag != "Heal" 
+            && other.tag != "magnet" && other.tag != "coin") {
 			if (GameControl.instance.ReduceHP (1)) {
+				hp = 0;
 				BirdDie ();
 			} else {
+				hp = GameControl.instance.getHP();
 				anim.SetTrigger("collide");
 				isCollided = true;
 			}
         } else if(other.tag == "boundary") {
 			GameControl.instance.ReduceHP (3);
+			hp = 0;
 			BirdDie();
         } else if (other.gameObject.CompareTag("star")) {
             other.gameObject.SetActive(false);
@@ -95,16 +120,19 @@ public class Bird : MonoBehaviour
 			if (heal.activeSelf) {
 				heal.SetActive(false);
 				GameControl.instance.IncreaseHP (1);
+				hp = GameControl.instance.getHP();
 			}
-		} else if (other.gameObject.CompareTag("Invincible")) {
-            GameObject invincible = other.gameObject.transform.GetChild(0).gameObject;
-            if (invincible.activeSelf) {
-                invincible.SetActive(false);
-                anim.SetTrigger("collide");
-                isInvincible = true;
-                isCollided = false; //Cancel protect state;
-            }
+		} else if (other.gameObject.CompareTag("magnet"))
+        {
+            other.gameObject.SetActive(false);
+            GameControl.instance.hasMagnet = true;
+        } else if (other.gameObject.CompareTag("coin"))
+        {
+            GameControl.instance.BirdScored(5);
+//            Destroy(other.gameObject);
+            other.gameObject.SetActive(false);
         }
+
     }
 
     void BirdDie() {
