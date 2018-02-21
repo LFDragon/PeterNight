@@ -10,6 +10,7 @@ public class ObsPool : MonoBehaviour {
 	 * Bat				1
 	 * TowerWithBrick	2
 	 * BatWithWave		3
+     * TowerWFirework   4
 	 * 
 	 * [--Collective--]
 	 * 9SquareStar		800
@@ -22,7 +23,8 @@ public class ObsPool : MonoBehaviour {
 		Tower, 
 		Bat,
         TowerWithBrick,
-		BatWithWave
+		BatWithWave,
+        TowerWithFirework
 	};
 
 	public enum Collective {
@@ -39,6 +41,7 @@ public class ObsPool : MonoBehaviour {
 	public GameObject towerWithBrickPrefab;
 	public GameObject batWithWavePrefab;
 	public GameObject fairyWithHealPrefab;
+    public GameObject towerWithFireworkPrefab;
 
 	public int type;
 
@@ -46,6 +49,7 @@ public class ObsPool : MonoBehaviour {
 	private GameObject[] bats;
 	private GameObject[] towerWithBricks;
 	private GameObject[] batWithWaves;
+    private GameObject[] towerWithFireworks;
 	private GameObject[] stars;
 	private GameObject fairyWithHeal;
 
@@ -55,7 +59,7 @@ public class ObsPool : MonoBehaviour {
 	//Main attributes.
 	public int obsPoolSize = 5;
 	public float spawnRate = 2f;
-	public readonly int obsTypeCountTotal = 4;
+    public readonly int obsTypeCountTotal = 5;
 	public readonly int colTypeCountTotal = 1;
 	public readonly int fairyTypeCountTotal = 1;
 
@@ -128,12 +132,14 @@ public class ObsPool : MonoBehaviour {
 		towerWithBricks = new GameObject[obsPoolSize];
 		stars = new GameObject[obsPoolSize];
 		batWithWaves = new GameObject[obsPoolSize];
+        towerWithFireworks = new GameObject[obsPoolSize];
 
 		GenerateObstacles (towerPrefab, towers);
 		GenerateObstacles (batPrefab, bats);
 		GenerateObstacles (towerWithBrickPrefab, towerWithBricks);
         GenerateObstacles (starPrefab, stars);
 		GenerateObstacles (batWithWavePrefab, batWithWaves);
+        GenerateObstacles (towerWithFireworkPrefab, towerWithFireworks);
 
 		fairyWithHeal = (GameObject)Instantiate(fairyWithHealPrefab, objectPoolPosition, Quaternion.identity);
     }
@@ -163,20 +169,22 @@ public class ObsPool : MonoBehaviour {
 			curObsTypeList.Add (Obstacle.Tower);
 		} else if (curScore == 45f) {
 			curObsTypeList.Clear ();
-			obsTypeCountCur = 4;
+			obsTypeCountCur = 5;
 			curObsTypeList.Add (Obstacle.Tower);
 			curObsTypeList.Add (Obstacle.Bat);
 			curObsTypeList.Add (Collective.Star);
 			curObsTypeList.Add (Fairy.Heal);
+            curObsTypeList.Add (Obstacle.TowerWithFirework);
 		} else if (curScore == 80f) {
 			curObsTypeList.Clear ();
-			obsTypeCountCur = 6;
+			obsTypeCountCur = 7;
 			curObsTypeList.Add (Obstacle.Tower);
 			curObsTypeList.Add (Obstacle.Bat);
 			curObsTypeList.Add (Obstacle.TowerWithBrick);
 			curObsTypeList.Add (Obstacle.BatWithWave);
 			curObsTypeList.Add (Collective.Star);
 			curObsTypeList.Add (Fairy.Heal);
+            curObsTypeList.Add (Obstacle.TowerWithFirework);
 		}
 
 		// When detect hp lost, add FairyWithHeal into the pool.
@@ -211,6 +219,9 @@ public class ObsPool : MonoBehaviour {
 			case (int)Obstacle.BatWithWave:
 				SetupObstacles (batWithWaves, new Vector2(spawnXPosition, Random.Range (batWaveYMin, batWaveYMax)), (int)Obstacle.BatWithWave);
 				break;
+            case (int)Obstacle.TowerWithFirework:
+                SetupObstacles (towerWithFireworks, new Vector2(spawnXPosition, -3.2f), (int)Obstacle.TowerWithFirework);
+                break;
 			case (int)Collective.Star:
                 SetupCollectives (stars, new Vector2(spawnXPosition, Random.Range(starYMin, starYMax)), (int)Collective.Star);
                 break;
