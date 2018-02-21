@@ -17,8 +17,7 @@ public class Bird : MonoBehaviour
     private Animator anim;
     private int hp = 3;
 
-	void Start()
-	{
+	void Start(){
 		//Get reference to the Animator component attached to this GameObject.
 		//anim = GetComponent<Animator> ();
 		//Get and store a reference to the Rigidbody2D attached to this GameObject.
@@ -95,45 +94,38 @@ public class Bird : MonoBehaviour
 		}
 	}
 
-    void OnTriggerEnter2D(Collider2D other) 
-    {
-        if (!isCollided && other.tag != "boundary" && other.tag != "star")
-        {
-            if (hp > 1)
-            {
-                GameControl.instance.ReduceHP(hp);
-                hp--;
-                anim.SetTrigger("collide");
-                isCollided = true;
-            }
-            else if (hp == 1)
-            {
-                BirdDie();
-            }
-        }
-        else if(other.tag == "boundary")
-        {
-            BirdDie();
-        }
-        else if (other.gameObject.CompareTag("star"))
-        {
+    void OnTriggerEnter2D(Collider2D other) {
+		if (!isCollided && other.tag != "boundary" && other.tag != "star" && other.tag != "Heal") {
+			if (GameControl.instance.ReduceHP (1)) {
+				hp = 0;
+				BirdDie ();
+			} else {
+				hp = GameControl.instance.getHP();
+				anim.SetTrigger("collide");
+				isCollided = true;
+			}
+        } else if(other.tag == "boundary") {
+			GameControl.instance.ReduceHP (3);
+			hp = 0;
+			BirdDie();
+        } else if (other.gameObject.CompareTag("star")) {
             other.gameObject.SetActive(false);
             GameControl.instance.BirdScored(5);
-            if (GameControl.instance.updateStars == false)
-            {
+            if (GameControl.instance.updateStars == false) {
                 GameControl.instance.RenewStars(other.gameObject.transform.parent);
             }
-        }
+		} else if (other.gameObject.CompareTag("Heal")) {
+			other.gameObject.transform.GetChild(0).gameObject.SetActive(false);
+			GameControl.instance.IncreaseHP (1);
+			hp = GameControl.instance.getHP();
+		}
     }
 
-    void BirdDie()
-    {
+    void BirdDie() {
         polycollider.isTrigger = false;
         rb2d.velocity = Vector2.zero;
         rb2d.gravityScale = 1f;
         isDead = true;
-        GameControl.instance.ReduceHP(4);
-        GameControl.instance.BirdDied ();
+        GameControl.instance.BirdDied();
     }
-
 }

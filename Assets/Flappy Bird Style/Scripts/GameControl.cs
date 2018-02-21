@@ -21,84 +21,101 @@ public class GameControl : MonoBehaviour
     private float updateStarsRate = 2f;
     private float timeSinceCollision = 0f;
 
-	void Awake()
-	{
+	public int hp = 3;
+	public GameObject[] hpHeartObjArr;
+
+	void Awake() {
 		//If we don't currently have a game control...
-		if (instance == null)
+		if (instance == null) {
 			//...set this one to be it...
 			instance = this;
-		//...otherwise...
-		else if(instance != this)
+			//...otherwise...
+		} else if (instance != this) {
 			//...destroy this one because it is a duplicate.
 			Destroy (gameObject);
+		}
+
+		hpHeartObjArr = new GameObject[] { 
+			hpComponent.transform.Find ("heart1").gameObject,
+			hpComponent.transform.Find ("heart2").gameObject,
+			hpComponent.transform.Find ("heart3").gameObject
+		};
 	}
 
-	void Update()
-	{
+	public int getHP() {
+		return hp;
+	}
+
+	void Update() {
 		//If the game is over and the player has pressed some input...
-		if (gameOver && Input.GetMouseButtonDown(0)) 
-		{
+		if (gameOver && Input.GetMouseButtonDown(0)) {
 			//...reload the current scene.
 			SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
 		}
-        if (updateStars)
-        {
+        if (updateStars) {
             timeSinceCollision += Time.deltaTime;
-            if (timeSinceCollision >= updateStarsRate)
-            {
+            if (timeSinceCollision >= updateStarsRate) {
                 timeSinceCollision = 0f;
                 updateStars = false;
-                foreach (Transform child in lastStars)
-                {
+                foreach (Transform child in lastStars) {
                     child.gameObject.SetActive(true);
                 }
             }
         }
 	}
 
-    public void BirdScored(int s)
-	{
+    public void BirdScored(int s) {
 		//The bird can't score if the game is over.
-		if (gameOver)	
+		if (gameOver) {
 			return;
+		}
 		//If the game is not over, increase the score...
 		score+=s;
 		//...and adjust the score text.
 		scoreText.text = "Score: " + score.ToString();
 	}
 
-	public void BirdDied()
-	{
+	public void BirdDied() {
 		//Activate the game over text.
 		gameOvertext.SetActive (true);
 		//Set the game to be over.
 		gameOver = true;
 	}
 
-    public void ReduceHP(int hp)
-    {
-        switch (hp)
-        {
-            case 1:
-                hpComponent.transform.Find("heart1").gameObject.SetActive(false);
-                break;
-            case 2:
-                hpComponent.transform.Find("heart2").gameObject.SetActive(false);
-                break;
-            case 3:
-                hpComponent.transform.Find("heart3").gameObject.SetActive(false);
-                break;
-            case 4:
-                hpComponent.transform.Find("heart3").gameObject.SetActive(false);
-                hpComponent.transform.Find("heart2").gameObject.SetActive(false);
-                hpComponent.transform.Find("heart1").gameObject.SetActive(false);
-                break;
-            default:
-                break;    
-        }
+	public bool ReduceHP(int lostHPAmount) {
+		// If lostHPAmount is more then hpLeft, consider death.
+		if (hp - lostHPAmount < 0) {
+			hp = lostHPAmount;
+		}
+
+		for (int i = hp - 1; i >= hp - lostHPAmount; i--) {
+			hpHeartObjArr [i].SetActive (false);
+		}
+
+		hp -= lostHPAmount;
+
+		// If no hp left, return true indicating death.
+		if (hp == 0) {
+			return true;
+		} else {
+			return false;
+		}
     }
-    public void RenewStars(Transform parent)
-    {
+		
+	public void IncreaseHP(int gainHPAmount) {
+		// Can only increase HP to 3 at most.
+		if (hp + gainHPAmount > 3) {
+			gainHPAmount = 3 - hp;
+		}
+
+		for (int i = hp; i <= hp + gainHPAmount - 1; i++) {
+			hpHeartObjArr [i].SetActive (true);
+		}
+
+		hp += gainHPAmount;
+	}
+
+    public void RenewStars(Transform parent) {
         updateStars = true;
         lastStars = parent;
     }

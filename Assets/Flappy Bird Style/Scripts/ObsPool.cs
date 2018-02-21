@@ -4,6 +4,20 @@ using UnityEngine;
 
 public class ObsPool : MonoBehaviour {
 
+	/**
+	 * [--Obstacle--]
+	 * Tower			0
+	 * Bat				1
+	 * TowerWithBrick	2
+	 * BatWithWave		3
+	 * 
+	 * [--Collective--]
+	 * 9SquareStar		800
+	 * 
+	 * [--Fairy--]
+	 * Heal				900
+	 */
+
 	public enum Obstacle {
 		Tower, 
 		Bat,
@@ -15,17 +29,25 @@ public class ObsPool : MonoBehaviour {
 		Star = 800
 	}
 
+	public enum Fairy {
+		Heal = 900
+	}
+
     public GameObject towerPrefab;
     public GameObject batPrefab;
     public GameObject starPrefab;
 	public GameObject towerWithBrickPrefab;
 	public GameObject batWithWavePrefab;
+	public GameObject fairyWithHealPrefab;
+
+	public int type;
 
 	private GameObject[] towers;
 	private GameObject[] bats;
 	private GameObject[] towerWithBricks;
 	private GameObject[] batWithWaves;
 	private GameObject[] stars;
+	private GameObject fairyWithHeal;
 
 	private Vector2 objectPoolPosition = new Vector2 (-15,-25);     //A holding position for our unused columns offscreen.
 	private float spawnXPosition = 15f;
@@ -35,12 +57,15 @@ public class ObsPool : MonoBehaviour {
 	public float spawnRate = 2f;
 	public readonly int obsTypeCountTotal = 4;
 	public readonly int colTypeCountTotal = 1;
+	public readonly int fairyTypeCountTotal = 1;
 
 	//Costum attributes.
     private float spawnRateMin = 1.5f;
 	private float spawnRateMax = 4f;
     private float batYMin = -2f;
     private float batYMax = 1.5f;
+	private float batWaveYMin = -3f;
+	private float batWaveYMax = 3.9f;
 	private float starYMin = -2f;
 	private float starYMax = 1.5f;
 
@@ -48,10 +73,14 @@ public class ObsPool : MonoBehaviour {
 	private float curScore = 0f;
 	public int[] curObsLocArr;
 	public int[] curColLocArr;
+	public int[] curFairyLocArr;
 	//public int[] typeToPoolSize
 	public int obsTypeCountCur = 1;
-    private float timeSinceLastSpawned;
-	private ArrayList curObsTypeArr = new ArrayList();
+    public float timeSinceLastSpawned;
+	public float timeSinceLastHeal;
+
+	public ArrayList curObsTypeList = new ArrayList();
+	public bool needToHeal = false;
 
 	void GenerateObstacles(GameObject obsObj, GameObject[] obsObjArr) {
 		for (int i = 0; i < obsPoolSize; i++) {
@@ -80,11 +109,19 @@ public class ObsPool : MonoBehaviour {
 		curColLocArr [curColTypeIndex] = currentLocation;
 	}
 
+	void HealMechanism () {
+		if (GameControl.instance.getHP () < 3) {
+			fairyWithHeal.transform.position = new Vector2 (spawnXPosition, 0f);
+		}
+	}
+
     void Start() {
         timeSinceLastSpawned = 0f;
+		timeSinceLastHeal = 0f;
 
 		curObsLocArr = new int[obsTypeCountTotal];
 		curColLocArr = new int[colTypeCountTotal];
+		curFairyLocArr = new int[fairyTypeCountTotal];
 
 		towers = new GameObject[obsPoolSize];
 		bats = new GameObject[obsPoolSize];
@@ -97,36 +134,57 @@ public class ObsPool : MonoBehaviour {
 		GenerateObstacles (towerWithBrickPrefab, towerWithBricks);
         GenerateObstacles (starPrefab, stars);
 		GenerateObstacles (batWithWavePrefab, batWithWaves);
+
+		fairyWithHeal = (GameObject)Instantiate(fairyWithHealPrefab, objectPoolPosition, Quaternion.identity);
     }
 
     //This spawns columns as long as the game is not over.
     void Update() {
+		if (needToHeal) {
+			timeSinceLastHeal += Time.deltaTime;
+		}
+
         timeSinceLastSpawned += Time.deltaTime;
 
 		curScore = GameControl.instance.score;
 
-		if (curScore <= 15f) {
+		if (curScore == 0f) {
+			obsTypeCountCur = 2;
+			curObsTypeList.Add (Obstacle.Bat);
+			curObsTypeList.Add (Obstacle.Tower);
+		} else if (curScore == 15f) {
+			curObsTypeList.Clear ();
 			obsTypeCountCur = 1;
-			curObsTypeArr.Add (Obstacle.BatWithWave);
-		} else if (curScore <= 30f) {
-			obsTypeCountCur = 1;
-			curObsTypeArr.Clear ();
-			curObsTypeArr.Add (Obstacle.Bat);
-		} else if (curScore <= 45f) {
-			obsTypeCountCur = 1;
-			curObsTypeArr.Clear ();
-			curObsTypeArr.Add (Obstacle.TowerWithBrick);
-		} else if (curScore <= 60f) {
-			obsTypeCountCur = 1;
-			curObsTypeArr.Clear ();
-			curObsTypeArr.Add (Collective.Star);
-		} else {
+			curObsTypeList.Add (Obstacle.BatWithWave);
+		} else if (curScore == 30f) {
+			curObsTypeList.Clear ();
+			obsTypeCountCur = 2;
+			curObsTypeList.Add (Obstacle.Bat);
+			curObsTypeList.Add (Obstacle.Tower);
+		} else if (curScore == 45f) {
+			curObsTypeList.Clear ();
 			obsTypeCountCur = 4;
-			curObsTypeArr.Clear ();
-			curObsTypeArr.Add (Obstacle.Tower);
-			curObsTypeArr.Add (Obstacle.Bat);
-			curObsTypeArr.Add (Obstacle.TowerWithBrick);
-			curObsTypeArr.Add (Collective.Star);
+			curObsTypeList.Add (Obstacle.Tower);
+			curObsTypeList.Add (Obstacle.Bat);
+			curObsTypeList.Add (Collective.Star);
+			curObsTypeList.Add (Fairy.Heal);
+		} else if (curScore == 80f) {
+			curObsTypeList.Clear ();
+			obsTypeCountCur = 6;
+			curObsTypeList.Add (Obstacle.Tower);
+			curObsTypeList.Add (Obstacle.Bat);
+			curObsTypeList.Add (Obstacle.TowerWithBrick);
+			curObsTypeList.Add (Obstacle.BatWithWave);
+			curObsTypeList.Add (Collective.Star);
+			curObsTypeList.Add (Fairy.Heal);
+		}
+
+		// When detect hp lost, add FairyWithHeal into the pool.
+		if (GameControl.instance.getHP () < 3 && !needToHeal) {
+			needToHeal = true;
+		}
+		if (GameControl.instance.getHP () == 3 && needToHeal) {
+			needToHeal = false;
 		}
 
         if (GameControl.instance.gameOver == false && timeSinceLastSpawned >= spawnRate)  {
@@ -135,7 +193,10 @@ public class ObsPool : MonoBehaviour {
             spawnRate = Random.Range(spawnRateMin, spawnRateMax);
 
 			int typeIndex = Random.Range(0, obsTypeCountCur);
-			int type = (int)curObsTypeArr [typeIndex];
+			if (curObsTypeList.Count == 0) {
+				return;
+			}
+			type = (int)curObsTypeList [typeIndex];
 
 			switch (type) {
 			case (int)Obstacle.Tower:
@@ -148,11 +209,20 @@ public class ObsPool : MonoBehaviour {
 				SetupObstacles (towerWithBricks, new Vector2(spawnXPosition, 0f), (int)Obstacle.TowerWithBrick);
 				break;
 			case (int)Obstacle.BatWithWave:
-				SetupObstacles (batWithWaves, new Vector2(spawnXPosition, Random.Range (batYMin, batYMax)), (int)Obstacle.BatWithWave);
+				SetupObstacles (batWithWaves, new Vector2(spawnXPosition, Random.Range (batWaveYMin, batWaveYMax)), (int)Obstacle.BatWithWave);
 				break;
 			case (int)Collective.Star:
                 SetupCollectives (stars, new Vector2(spawnXPosition, Random.Range(starYMin, starYMax)), (int)Collective.Star);
                 break;
+			case (int)Fairy.Heal:
+				if (timeSinceLastHeal >= 30f && needToHeal) {
+					fairyWithHeal.transform.position = new Vector2 (spawnXPosition, 0f);
+					timeSinceLastHeal = 0f;
+				} else {
+					// When the FairyWithHeal doesn't need to show up, and index was randomed to be here, then, skip this heal and random again immediately.
+					timeSinceLastSpawned = spawnRate; 
+				}
+				break;
 			}
         }
     }
