@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CoinController : MonoBehaviour {
 
-    public GameObject target;
+    private GameObject target;
 
     private float speed = 7f;
     private float initPositionX;
@@ -12,6 +12,7 @@ public class CoinController : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
+        target = GameControl.instance.Player;
         initPositionX = transform.position.x;
         initPositionY = transform.position.y;
     }

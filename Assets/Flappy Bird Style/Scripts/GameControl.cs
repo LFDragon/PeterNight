@@ -9,7 +9,7 @@ public class GameControl : MonoBehaviour
 	public Text scoreText;						//A reference to the UI text component that displays the player's score.
 	public GameObject gameOvertext;				//A reference to the object that displays the text which appears when the player dies.
     public GameObject hpComponent;
-    private GameObject currentHeart;
+    public GameObject Player;
 
 	public int score = 0;						//The player's score.
 	public bool gameOver = false;				//Is the game over?
@@ -25,6 +25,8 @@ public class GameControl : MonoBehaviour
 	public GameObject[] hpHeartObjArr;
 
     public bool hasMagnet = false;
+    private float timeSinceMag = 0f;
+
 
 	void Awake() {
 		//If we don't currently have a game control...
@@ -62,6 +64,13 @@ public class GameControl : MonoBehaviour
                 foreach (Transform child in lastStars) {
                     child.gameObject.SetActive(true);
                 }
+            }
+        }
+        if (hasMagnet) {
+            timeSinceMag += Time.deltaTime;
+            if (timeSinceMag >= 1000f) {
+                timeSinceMag = 0f;
+                hasMagnet = false;
             }
         }
 	}

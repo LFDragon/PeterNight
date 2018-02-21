@@ -34,7 +34,8 @@ public class ObsPool : MonoBehaviour {
 
 	public enum Fairy {
 		Heal = 900,
-        Invincible
+        Invincible,
+        Magnet
 	}
 
     public GameObject towerPrefab;
@@ -45,6 +46,7 @@ public class ObsPool : MonoBehaviour {
     public GameObject batWithWavePrefab;
 	public GameObject fairyWithHealPrefab;
     public GameObject fairyWithInvinciblePrefab;
+    public GameObject fairyWithMagnetPrefab;
 
 	public int type;
 
@@ -56,6 +58,7 @@ public class ObsPool : MonoBehaviour {
 	private GameObject[] stars;
 	private GameObject fairyWithHeal;
     private GameObject fairyWithInvincible;
+    private GameObject fairyWithMagnet;
 
 	private Vector2 objectPoolPosition = new Vector2 (-15,-25);     //A holding position for our unused columns offscreen.
 	private float spawnXPosition = 15f;
@@ -65,7 +68,7 @@ public class ObsPool : MonoBehaviour {
 	public float spawnRate = 2f;
     public readonly int obsTypeCountTotal = 5;
 	public readonly int colTypeCountTotal = 1;
-	public readonly int fairyTypeCountTotal = 2;
+	public readonly int fairyTypeCountTotal = 3;
 
 	//Costum attributes.
     private float spawnRateMin = 1.5f;
@@ -87,6 +90,7 @@ public class ObsPool : MonoBehaviour {
     public float timeSinceLastSpawned;
 	public float timeSinceLastHeal;
     public float timeSinceLastInvincible;
+    public float timeSinceLastMagnet;
 
 	public ArrayList curObsTypeList = new ArrayList();
 	public bool needToHeal = false;
@@ -128,6 +132,7 @@ public class ObsPool : MonoBehaviour {
         timeSinceLastSpawned = 0f;
 		timeSinceLastHeal = 0f;
         timeSinceLastInvincible = 0f;
+        timeSinceLastMagnet = 0f;
 
 		curObsLocArr = new int[obsTypeCountTotal];
 		curColLocArr = new int[colTypeCountTotal];
@@ -149,6 +154,7 @@ public class ObsPool : MonoBehaviour {
 
 		fairyWithHeal = (GameObject)Instantiate(fairyWithHealPrefab, objectPoolPosition, Quaternion.identity);
         fairyWithInvincible = (GameObject)Instantiate(fairyWithInvinciblePrefab, objectPoolPosition, Quaternion.identity);
+        fairyWithMagnet = (GameObject)Instantiate(fairyWithMagnetPrefab, objectPoolPosition, Quaternion.identity);
     }
 
     //This spawns columns as long as the game is not over.
@@ -158,6 +164,7 @@ public class ObsPool : MonoBehaviour {
 		}
 
         timeSinceLastInvincible += Time.deltaTime;
+        timeSinceLastMagnet += Time.deltaTime;
         timeSinceLastSpawned += Time.deltaTime;
 
 		curScore = GameControl.instance.score;
@@ -180,16 +187,17 @@ public class ObsPool : MonoBehaviour {
             curObsTypeList.Add (Fairy.Invincible);
         } else if (curScore == 45f) {
 			curObsTypeList.Clear ();
-			obsTypeCountCur = 6;
+			obsTypeCountCur = 7;
 			curObsTypeList.Add (Obstacle.Tower);
 			curObsTypeList.Add (Obstacle.Bat);
 			curObsTypeList.Add (Collective.Star);
 			curObsTypeList.Add (Fairy.Heal);
             curObsTypeList.Add (Obstacle.TowerWithFirework);
             curObsTypeList.Add (Fairy.Invincible);
+            curObsTypeList.Add (Fairy.Magnet);
         } else if (curScore == 80f) {
 			curObsTypeList.Clear ();
-			obsTypeCountCur = 8;
+			obsTypeCountCur = 9;
 			curObsTypeList.Add (Obstacle.Tower);
 			curObsTypeList.Add (Obstacle.Bat);
 			curObsTypeList.Add (Obstacle.TowerWithBrick);
@@ -198,6 +206,7 @@ public class ObsPool : MonoBehaviour {
 			curObsTypeList.Add (Fairy.Heal);
             curObsTypeList.Add (Obstacle.TowerWithFirework);
             curObsTypeList.Add (Fairy.Invincible);
+            curObsTypeList.Add (Fairy.Magnet);
         }
 
 		// When detect hp lost, add FairyWithHeal into the pool.
@@ -252,6 +261,17 @@ public class ObsPool : MonoBehaviour {
                 {
                     fairyWithInvincible.transform.position = new Vector2(spawnXPosition, 0f);
                     timeSinceLastInvincible = 0f;
+                }
+                else
+                {
+                    timeSinceLastSpawned = spawnRate;
+                }
+                break;
+            case (int)Fairy.Magnet:
+                if (timeSinceLastMagnet >= 30f)
+                {
+                    fairyWithMagnet.transform.position = new Vector2(spawnXPosition, 0f);
+                    timeSinceLastMagnet = 0f;
                 }
                 else
                 {
