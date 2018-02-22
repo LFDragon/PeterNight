@@ -10,6 +10,7 @@ public class GameControl : MonoBehaviour
 	public GameObject gameOvertext;				//A reference to the object that displays the text which appears when the player dies.
     public GameObject hpComponent;
     public GameObject Player;
+    public GameObject magnetPrefab;
 
 	public int score = 0;						//The player's score.
 	public bool gameOver = false;				//Is the game over?
@@ -25,7 +26,9 @@ public class GameControl : MonoBehaviour
 	public GameObject[] hpHeartObjArr;
 
     public bool hasMagnet = false;
+    private bool existMagnet = false;
     private float timeSinceMag = 0f;
+    public Transform fairyWithMag;
 
 
 	void Awake() {
@@ -44,6 +47,9 @@ public class GameControl : MonoBehaviour
 			hpComponent.transform.Find ("heart2").gameObject,
 			hpComponent.transform.Find ("heart3").gameObject
 		};
+
+        magnetPrefab = (GameObject)Instantiate(magnetPrefab, Player.transform.position, Quaternion.identity); 
+        magnetPrefab.SetActive(false);
 	}
 
 	public int getHP() {
@@ -68,9 +74,19 @@ public class GameControl : MonoBehaviour
         }
         if (hasMagnet) {
             timeSinceMag += Time.deltaTime;
-            if (timeSinceMag >= 1000f) {
+            if (!existMagnet)
+            {
+                magnetPrefab.transform.position = Player.transform.position;
+                magnetPrefab.SetActive(true);
+                existMagnet = true;
+            }
+            magnetPrefab.transform.position = Vector3.MoveTowards(transform.position,Player.transform.position, 100f);
+            if (timeSinceMag >= 10f) {
                 timeSinceMag = 0f;
                 hasMagnet = false;
+                existMagnet = false;
+                fairyWithMag.Find("magnet").gameObject.SetActive(true);
+                magnetPrefab.SetActive(false);
             }
         }
 	}
@@ -129,5 +145,5 @@ public class GameControl : MonoBehaviour
     public void RenewStars(Transform parent) {
         updateStars = true;
         lastStars = parent;
-    }
+    }    
 }

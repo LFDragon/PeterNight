@@ -26,12 +26,12 @@ public class CoinController : MonoBehaviour {
         }
     }
 
-    void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.gameObject.name == "Bird")
-        {
-            transform.position = new Vector3(initPositionX, initPositionY);
-            transform.gameObject.SetActive(true);
-        }
-    }
+//    void OnTriggerEnter2D(Collider2D other)
+//    {
+//        if (other.gameObject.name == "Bird")
+//        {
+//            transform.position = new Vector3(initPositionX, initPositionY);
+//            transform.gameObject.SetActive(true);
+//        }
+//    }
 }

@@ -100,6 +100,7 @@ public class Bird : MonoBehaviour
 		} else if (other.gameObject.CompareTag("magnet")) {
             other.gameObject.SetActive(false);
             GameControl.instance.hasMagnet = true;
+            GameControl.instance.fairyWithMag = other.gameObject.transform.parent;
         } else if (other.gameObject.CompareTag("coin")) {
             GameControl.instance.BirdScored(5);
 //            Destroy(other.gameObject);

@@ -810,7 +810,7 @@ MonoBehaviour:
   towerPrefab: {fileID: 1323334010728048, guid: 6d0c37e3bb4524307b6189d19d41aa1b,
     type: 2}
   batPrefab: {fileID: 1683820902637708, guid: a802d13482c0b404ca8ea84050277c50, type: 2}
-  starPrefab: {fileID: 1383942176757428, guid: 3f0f3963800854c4198cb9646d412673, type: 2}
+  starPrefab: {fileID: 1012394377329738, guid: 3f0f3963800854c4198cb9646d412673, type: 2}
   towerWithBrickPrefab: {fileID: 1213451546111654, guid: e92c1ece052364cfabb647cf0f28b0ba,
     type: 2}
   towerWithFireworkPrefab: {fileID: 1397854980068110, guid: 8cd35ffd6432d4b5cb3d453cf678b4da,
@@ -821,7 +821,7 @@ MonoBehaviour:
     type: 2}
   fairyWithInvinciblePrefab: {fileID: 1790143708686138, guid: 808f9457b0393c74487cebd3a066820a,
     type: 2}
-  fairyWithMagnetPrefab: {fileID: 1469246883642176, guid: 9c039e466487342448acfaed8658a6e4,
+  fairyWithMagnetPrefab: {fileID: 1614303433559896, guid: 9c039e466487342448acfaed8658a6e4,
     type: 2}
   type: 0
   obsPoolSize: 5
@@ -850,6 +850,8 @@ MonoBehaviour:
   gameOvertext: {fileID: 433713201}
   hpComponent: {fileID: 689293542}
   Player: {fileID: 325587985}
+  magnetPrefab: {fileID: 1077163791961320, guid: 2c82c3fbe6bd244d881e6192fcad31bb,
+    type: 2}
   score: 0
   gameOver: 0
   scrollSpeed: -5
@@ -858,6 +860,7 @@ MonoBehaviour:
   hp: 3
   hpHeartObjArr: []
   hasMagnet: 0
+  fairyWithMag: {fileID: 0}
 --- !u!4 &1244831761
 Transform:
   m_ObjectHideFlags: 0
