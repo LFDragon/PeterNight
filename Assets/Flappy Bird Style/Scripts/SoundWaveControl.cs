@@ -7,7 +7,6 @@ public class SoundWaveControl : MonoBehaviour {
 	public GameObject wave;
 	private Rigidbody2D rb2d;
 	private float timeElaspe = 0f;
-	private readonly int FRAME_X = 12;
     private readonly int MAX_WAVE = 2;
     private int curWave = 0;
 
@@ -15,26 +14,25 @@ public class SoundWaveControl : MonoBehaviour {
 
 	void Start () {
 		rb2d = GetComponent<Rigidbody2D>(); // BatWithWave's Rigidbody2D.
-		rb2d.velocity = new Vector2 (GameControl.instance.scrollSpeed, 0); // Make speed of BatWithWave to be the same as background.
+		//rb2d.velocity = new Vector2 (GameControl.instance.scrollSpeed, 0); // Make speed of BatWithWave to be the same as background.
 	}
 
 	void Update () {
-        if (transform.position.x < FRAME_X && transform.position.x > -FRAME_X && curWave < MAX_WAVE) {
+        if (!GameControl.instance.gameOver && transform.position.x < GameControl.instance.Boundary_RIGHT 
+            && transform.position.x > GameControl.instance.Boundary_LEFT) {
 			// When in the frame scene.
+            transform.position = new Vector2(transform.position.x + GameControl.instance.scrollSpeed * Time.deltaTime, 
+                transform.position.y);
 			timeElaspe += Time.deltaTime;
-			if (timeElaspe >= shootInterval) {
+            if (timeElaspe >= shootInterval && curWave < MAX_WAVE) {
                 Instantiate(wave, new Vector2(transform.position.x-2.2f,transform.position.y-0.3f), Quaternion.identity);
                 curWave++;
 				timeElaspe = 0f;
 			}
-		} else if (transform.position.x < -12) {
+        } else if (transform.position.x < GameControl.instance.Boundary_LEFT) {
 			// When move out of the scene.
             timeElaspe = 0;
             curWave = 0;
 		} 
-        if (GameControl.instance.gameOver) {
-			// When game is over.
-			rb2d.velocity = Vector2.zero;
-		}
 	}
 }

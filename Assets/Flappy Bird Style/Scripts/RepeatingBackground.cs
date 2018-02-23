@@ -25,6 +25,12 @@ public class RepeatingBackground : MonoBehaviour
 			//If true, this means this object is no longer visible and we can safely move it forward to be re-used.
 			RepositionBackground ();
 		}
+        if (!GameControl.instance.gameOver)
+        {
+            //rb2d.velocity = Vector2.zero;
+            transform.position = new Vector2(transform.position.x + GameControl.instance.scrollSpeed * Time.deltaTime, 
+                transform.position.y);
+        }
 	}
 
 	//Moves the object this script is attached to right in order to create our looping background effect.

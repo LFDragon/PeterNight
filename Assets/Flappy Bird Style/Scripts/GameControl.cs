@@ -30,6 +30,8 @@ public class GameControl : MonoBehaviour
     private float timeSinceMag = 0f;
     public Transform fairyWithMag;
 
+    public float Boundary_LEFT = -12;
+    public float Boundary_RIGHT = 15;
 
 	void Awake() {
 		//If we don't currently have a game control...

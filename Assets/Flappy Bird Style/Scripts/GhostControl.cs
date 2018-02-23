@@ -11,6 +11,7 @@ public class GhostControl : MonoBehaviour {
     private readonly float ghostShootSpeed = 12f;
     private float holdingTime;
     private Rigidbody2D rb2d;
+    private Animator anim;
 
 	// Use this for initialization
     void Start () {
@@ -18,6 +19,7 @@ public class GhostControl : MonoBehaviour {
         isStatic = false;
         readyToShoot = false;
         rb2d = GetComponent<Rigidbody2D>();
+        anim = GetComponent<Animator>();
         rb2d.velocity = new Vector2(GameControl.instance.scrollSpeed, 0);
 	}
 	
@@ -39,6 +41,7 @@ public class GhostControl : MonoBehaviour {
         }
 
         if (isStatic && readyToShoot) {
+            anim.SetTrigger("Stop");
             float step = ghostShootSpeed * Time.deltaTime;
             transform.position = Vector3.MoveTowards(transform.position, targetPosition, step);
         }
@@ -52,6 +55,7 @@ public class GhostControl : MonoBehaviour {
 
         if (transform.position.x > 12f) {
             transform.gameObject.SetActive(true);
+            anim.SetTrigger("Start");
             rb2d.velocity = new Vector2(GameControl.instance.scrollSpeed, 0);
         }
 	}

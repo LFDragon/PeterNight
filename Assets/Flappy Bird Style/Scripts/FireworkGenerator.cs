@@ -20,20 +20,18 @@ public class FireworkGenerator : MonoBehaviour {
         anim = GetComponent<Animator>();
         anim.SetTrigger("Fire");
         randomY = Random.Range(MIN_Y, MAX_Y);
-        rb2d.velocity = new Vector2(GameControl.instance.scrollSpeed, 0);
+        //rb2d.velocity = new Vector2(GameControl.instance.scrollSpeed, 0);
 	}
 	
 	// Update is called once per frame
 	void Update () {
-        if (GameControl.instance.gameOver)
-        {
-            rb2d.velocity = Vector2.zero;
-        }
-        else
+        if (!GameControl.instance.gameOver)
         {
             if (!fired)
             {
                 timeElapsed += Time.deltaTime;
+                transform.position = new Vector2(transform.position.x + GameControl.instance.scrollSpeed * Time.deltaTime,
+                    transform.position.y);
                 if (timeElapsed >= fireCountDown)
                 {
                     fired = true;
@@ -43,7 +41,9 @@ public class FireworkGenerator : MonoBehaviour {
             {
                 if (transform.position.y < randomY)
                 {
-                    rb2d.velocity = new Vector2(GameControl.instance.scrollSpeed, firespeed);
+                    //rb2d.velocity = new Vector2(GameControl.instance.scrollSpeed, firespeed);
+                    transform.position = new Vector2(transform.position.x + GameControl.instance.scrollSpeed * Time.deltaTime,
+                        transform.position.y + firespeed * Time.deltaTime);
                 }
                 else
                 {

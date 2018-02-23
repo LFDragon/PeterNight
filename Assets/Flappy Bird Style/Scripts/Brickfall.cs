@@ -12,7 +12,7 @@ public class Brickfall : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         rb2d = GetComponent<Rigidbody2D>();
-        rb2d.velocity = new Vector2 (GameControl.instance.scrollSpeed, fallspeed);
+        //rb2d.velocity = new Vector2 (GameControl.instance.scrollSpeed, fallspeed);
 	}
 	
 	// Update is called once per frame
@@ -22,13 +22,11 @@ public class Brickfall : MonoBehaviour {
         {
             DestroyGameObject();
         }
-        if (GameControl.instance.gameOver)
-        {
-            rb2d.velocity = Vector2.zero;
-        }
-        else
+        if (!GameControl.instance.gameOver)
         {
             transform.Rotate (new Vector3 (0, 0, rotatespeed) * Time.deltaTime);
+            transform.position = new Vector2(transform.position.x + GameControl.instance.scrollSpeed * Time.deltaTime,
+                transform.position.y + fallspeed * Time.deltaTime);
         }
 	}
 

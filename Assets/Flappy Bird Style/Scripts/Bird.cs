@@ -54,13 +54,15 @@ public class Bird : MonoBehaviour
         //Don't allow control if the bird has died.
         if (isDead == false) 
 		{
-            if (Input.GetKeyUp(KeyCode.UpArrow)) 
+            if (Input.GetKey(KeyCode.UpArrow)) 
             {
-                rb2d.AddForce(new Vector2(0, upForce));
+                //rb2d.AddForce(new Vector2(0, upForce));
+                transform.position = new Vector2(transform.position.x, transform.position.y + moveSpeed);
             }
-            else if (Input.GetKeyUp(KeyCode.DownArrow))
+            else if (Input.GetKey(KeyCode.DownArrow))
             {
-                rb2d.AddForce(new Vector2(0, -upForce));
+                //rb2d.AddForce(new Vector2(0, -upForce));
+                transform.position = new Vector2(transform.position.x, transform.position.y - moveSpeed);
             }
 
 

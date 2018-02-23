@@ -16,17 +16,16 @@ public class FireworkControl : MonoBehaviour {
 
     void Start () {
         rb2d = GetComponent<Rigidbody2D>();
-        rb2d.velocity = new Vector2 (GameControl.instance.scrollSpeed, 0);
+        //rb2d.velocity = new Vector2 (GameControl.instance.scrollSpeed, 0);
     }
 
     void Update() {
          
-        if (GameControl.instance.gameOver)
+        if (!GameControl.instance.gameOver && transform.position.x < GameControl.instance.Boundary_RIGHT 
+            && transform.position.x > GameControl.instance.Boundary_LEFT)
         {
-            rb2d.velocity = Vector2.zero;
-        }
-        else
-        {
+            transform.position = new Vector2(transform.position.x + GameControl.instance.scrollSpeed * Time.deltaTime,
+                transform.position.y);
             if (!fired)
             {
                 if (transform.position.x <= fireposition && transform.position.x > LEFT_X)
