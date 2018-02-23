@@ -10,6 +10,9 @@ TagManager:
   - obstacles
   - Heal
   - Invincible
+  - magnet
+  - coin
+  - FairyWithMag
   layers:
   - Default
   - TransparentFX
